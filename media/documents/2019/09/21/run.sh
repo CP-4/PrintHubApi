@@ -1,0 +1,1 @@
+deepspeech --model '/home/epoch/CP4/deepspeech/models/output_graph.pbmm' --alphabet '/home/epoch/CP4/deepspeech/models/alphabet.txt' --lm '/home/epoch/CP4/deepspeech/models/lm.binary'  --trie '/home/epoch/CP4/deepspeech/models/trie' --audio '/home/epoch/CP4/audio.wav'
