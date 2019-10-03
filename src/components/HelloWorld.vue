@@ -75,7 +75,7 @@
         <br>
         <br>
 
-        <a class="button is-dark is-fullwidth is-large" v-on:click="actionButton()">
+        <a class="button is-warning is-fullwidth is-large" v-on:click="actionButton()">
           <span>{{ this.action_button_text }}</span>
         </a>
         <br>
@@ -97,7 +97,9 @@ export default {
   data() {
     return {
       files: [], // Array for holding the files.
-      api_host: 'http://192.168.1.103:8000',
+      // api_host: 'http://192.168.43.199:8000',
+      // api_host: 'http://192.168.1.103:8000',
+      api_host: 'http://192.168.0.105:8000',
       // api_host: 'localhost:8000',
       // api_host: '127.0.0.1:8000',
       showNav: true,
@@ -115,7 +117,7 @@ export default {
     this.getFiles();
   },
   methods: {
-    getFiles() {
+    getFiles () {
       axios({
         method: 'get',
         url: this.api_host + '/file2/files/',
@@ -123,36 +125,68 @@ export default {
     },
 
     removeFile(file_id) {
-      axios({
-        method: 'delete',
-        url: this.api_host + '/file2/files/' + file_id,
-      }).then(response => this.getFiles());
+
+      if (this.active_tab === 'my_print_tray') {
+
+        axios({
+          method: 'delete',
+          url: this.api_host + '/file2/files/' + file_id,
+        }).then(response => this.getFiles());
+
+      }
+    },
+
+    checkFile (file) {
+
+      var sFileName = file.name;
+      var sFileExtension = sFileName.split('.')[sFileName.split('.').length - 1].toLowerCase();
+      var iFileSize = file.size;
+      var iConvert = (file.size / 1048576).toFixed(2);
+
+      /// OR together the accepted extensions and NOT it. Then OR the size cond.
+      /// It's easier to see this way, but just a suggestion - no requirement.
+
+      var valid_type = ["doc", "docx"]
+
+      if (!(valid_type.includes(sFileExtension) || iFileSize > 10485760)) { /// 10 mb
+        var txt;
+        txt = "File type : " + sFileExtension + "\n\n";
+        txt += "Size: " + iConvert + " MB \n\n";
+        txt += "Please make sure your file is in docx or doc format and less than 10 MB.\n\n";
+        alert(txt);
+        return false;
+      }
+      return true;
+
     },
 
     addFile() {
 
       let docfile = this.$refs.file.files[0];
-      let formData = new FormData();
-      formData.append('docfile', docfile);
 
-      axios({
-        method: 'post',
-        url: this.api_host + '/file2/files/upload/',
-        data: formData,
-        config: {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+      if (this.checkFile(docfile)) {
+        let formData = new FormData();
+        formData.append('docfile', docfile);
+
+        axios({
+          method: 'post',
+          url: this.api_host + '/file2/files/upload/',
+          data: formData,
+          config: {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           }
-        }
 
-      }).then(response => this.getFiles());
+        }).then(response => this.getFiles());
+      }
     },
 
-    getFileName(docfile) {
+    getFileName (docfile) {
       return docfile.split('/').pop().substring(0, 15)
     },
 
-    actionButton() {
+    actionButton () {
 
       if (this.active_tab === 'my_print_tray') {
         console.log('send print tray')
@@ -186,29 +220,31 @@ export default {
       }
     },
 
-    setMyPrintTray() {
+    setMyPrintTray () {
       this.active_tab = "my_print_tray";
       this.action_button_text = "Print Files"
     },
 
-    setMyPickUp() {
+    setMyPickUp () {
       this.active_tab = "my_pick_up";
       this.action_button_text = "Pick-Up"
     },
 
-    getReleventFiles() {
+    getReleventFiles () {
       if (this.active_tab === 'my_print_tray') {
         return this.files.filter(function(file) {
           return file.printJobStatus == 0;
         });
       } else if (this.active_tab === 'my_pick_up') {
         return this.files.filter(function(file) {
-          return file.printJobStatus == 1;
+          var t_list = [1, 2, 3];
+          return t_list.includes(file.printJobStatus);
+          // TODO: change filter
         });
       }
     },
 
-    getFileStatus(file_status) {
+    getFileStatus (file_status) {
       console.log(file_status);
       switch (file_status) {
         case 0:
@@ -224,6 +260,10 @@ export default {
           break;
 
         case 3:
+          return 'Pick-Up'
+          break;
+
+        case 4:
           return 'Picked'
           break;
 
@@ -232,9 +272,10 @@ export default {
       }
     },
 
-    getPickUpNumber() {
+    getPickUpNumber () {
       return this.files.filter(function(file) {
-        return file.printJobStatus == 1;
+        var t_list = [1, 2, 3];
+        return t_list.includes(file.printJobStatus);
       }).length;
     },
 
