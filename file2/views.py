@@ -33,14 +33,18 @@ class LoginView(generics.CreateAPIView):
     """
     POST auth/login/
     """
+
+
     # This permission class will overide the global permission
     # class setting
     permission_classes = (permissions.AllowAny,)
 
+
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get("username", "")
+        # return Response("Bhagwan sab deek raha hai")
+        username = request.data.get("mobilenumber", "")
         password = request.data.get("password", "")
         user = authenticate(request, username=username, password=password)
 
@@ -264,6 +268,7 @@ class PickUpFiles(generics.RetrieveUpdateAPIView):
 
 
 class GetPrintJobs(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny,)
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
@@ -286,6 +291,7 @@ class GetPrintJobs(generics.ListAPIView):
 
 
 class GetDeliveryJobs(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny,)
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
@@ -308,6 +314,7 @@ class GetDeliveryJobs(generics.ListAPIView):
 
 
 class SetPrintJobStatus(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.AllowAny,)
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer

@@ -50,7 +50,7 @@
                 </div>
                 <div class="level-item">
                   <!-- <a class="delete is-danger" v-on:click="removeFile(file.id)"></a> -->
-                  <a class="button is-danger" v-on:click="removeFile(file.id)">{{ getFileStatus(file.printJobStatus) }}</a>
+                  <a class="button" :class="[ actionButtonColor()? 'is-danger' : 'is-light' ]" v-on:click="removeFile(file.id)">{{ getFileStatus(file.printJobStatus) }}</a>
                 </div>
               </div>
             </div>
@@ -61,7 +61,7 @@
       <div class="container has-text-centered">
         <div class="tile" v-if="getReleventFiles().length === 0">
           <p class="title is-4">No files in print tray.</p>
-          <p class="subtitle">Check Pick Up Queue</p>
+          <p class="subtitle ">Check Pick Up Queue</p>
         </div>
       </div>
 
@@ -75,7 +75,7 @@
         <br>
         <br>
 
-        <a class="button is-warning is-fullwidth is-large" v-on:click="actionButton()">
+        <a class="button is-warning is-rounded is-large"  v-on:click="actionButton()">
           <span>{{ this.action_button_text }}</span>
         </a>
         <br>
@@ -84,6 +84,7 @@
     </div>
 
   </section>
+
 
 
 </div>
@@ -99,9 +100,9 @@ export default {
       files: [], // Array for holding the files.
       // api_host: 'http://192.168.43.199:8000',
       // api_host: 'http://192.168.1.103:8000',
-      api_host: 'http://192.168.0.105:8000',
+      api_host: 'http://192.168.0.103:8000',
       // api_host: 'localhost:8000',
-      // api_host: '127.0.0.1:8000',
+      // api_host: 'http://127.0.0.1:8000',
       showNav: true,
       action_button_text: "Print Files",
       active_tab: "my_print_tray",
@@ -226,8 +227,9 @@ export default {
     },
 
     setMyPickUp () {
+      this.getFiles();
       this.active_tab = "my_pick_up";
-      this.action_button_text = "Pick-Up"
+      this.action_button_text = "Here to Pick-Up"
     },
 
     getReleventFiles () {
@@ -277,6 +279,14 @@ export default {
         var t_list = [1, 2, 3];
         return t_list.includes(file.printJobStatus);
       }).length;
+    },
+
+    actionButtonColor () {
+      if (this.active_tab === 'my_print_tray') {
+        return true;
+      } else if (this.active_tab === 'my_pick_up') {
+        return false;
+      }
     },
 
   }

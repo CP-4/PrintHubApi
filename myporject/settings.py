@@ -32,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '192.168.43.199',
-    '192.168.0.105',
+    '192.168.0.103',
     '192.168.1.103',
     '127.0.0.1',
     'localhost',
@@ -153,7 +153,7 @@ JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LEEWAY': 0,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_AUDIENCE': None,
     'JWT_ISSUER': None,
 
