@@ -31,11 +31,16 @@ SECRET_KEY = 'bx))=@+=18h1$8c8#-j^5g7mu-1yhfbj-f8qqjfhhs-d$42gem'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'http://127.0.0.1:8080',
     '192.168.43.199',
     '192.168.0.103',
     '192.168.1.103',
     '127.0.0.1',
     'localhost',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8080',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

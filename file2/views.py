@@ -33,18 +33,14 @@ class LoginView(generics.CreateAPIView):
     """
     POST auth/login/
     """
-
-
     # This permission class will overide the global permission
     # class setting
     permission_classes = (permissions.AllowAny,)
-
-
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
         # return Response("Bhagwan sab deek raha hai")
-        username = request.data.get("mobilenumber", "")
+        username = request.data.get("username", "")
         password = request.data.get("password", "")
         user = authenticate(request, username=username, password=password)
 
@@ -69,19 +65,19 @@ class RegisterUsersView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        mobilenumber = request.data.get("mobilenumber", "")
+        username = request.data.get("username", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
 
-        if not mobilenumber and not password and not email:
+        if not username and not password and not email:
             return Response(
                 data={
-                    "message": "mobilenumber, password and email is required to register a user"
+                    "message": "username, password and email is required to register a user"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
         new_user = User.objects.create_user(
-            username=mobilenumber, password=password, email=email
+            username=username, password=password, email=email
         )
         return Response(status=status.HTTP_201_CREATED)
 
