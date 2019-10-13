@@ -20,6 +20,11 @@ export const store = new Vuex.Store({
   },
 
   mutations: {
+    destroyToken (state) {
+      localStorage.removeItem('access_token');
+      state.accessToken = null;
+    },
+
     retrieveToken (state, token) {
       localStorage.setItem('access_token', token);
       state.accessToken = token;
@@ -27,6 +32,10 @@ export const store = new Vuex.Store({
   },
 
   actions: {
+    logoutUser (context) {
+      context.commit('destroyToken')
+    },
+
     loginUser (context, credentials) {
       return new Promise ((resolve, reject) => {
         axiosBase.post('/file2/auth/login/', {

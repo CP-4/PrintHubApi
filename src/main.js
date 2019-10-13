@@ -3,24 +3,32 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { store } from './store'
+import {
+  store
+} from './store'
 
 Vue.config.productionTip = false
 
 
 router.beforeEach((to, from, next) => {
+  console.log('loggedIn: ' + store.getters.loggedIn);
+  console.log('accessToken: ' + store.state.accessToken);
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.getters.loggedIn) {
-      next({ name: 'Login' })
+      next({
+        name: 'Login'
+      })
     } else {
       next()
     }
-  // } else if (to.matched.some(record => record.meta.requiresLogged)) {
-  //   if (store.getters.loggedIn) {
-  //     next({ name: 'HelloWorld' })
-  //   } else {
-  //     next()
-  //   }
+  } else if (to.matched.some(record => record.meta.requiresLogged)) {
+    if (store.getters.loggedIn) {
+      next({
+        name: 'HelloWorld'
+      })
+    } else {
+      next()
+    }
   } else {
     next()
   }
@@ -33,6 +41,8 @@ new Vue({
   el: '#app',
   router: router,
   store: store,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

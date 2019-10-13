@@ -87,8 +87,8 @@ class ListDocumentView(generics.ListAPIView):
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    permission_classes = (permissions.AllowAny,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -97,7 +97,8 @@ class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
     PUT songs/:id/
     DELETE songs/:id/
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
@@ -143,8 +144,8 @@ class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UploadDocumentView(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
 
     parser_class = (FileUploadParser,)
 
@@ -209,8 +210,8 @@ class UpdatePrintStatusDone(generics.RetrieveUpdateAPIView):
 
 
 class PrintFiles(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
@@ -237,8 +238,8 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
 
 
 class PickUpFiles(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
