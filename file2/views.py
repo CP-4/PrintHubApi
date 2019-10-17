@@ -17,8 +17,8 @@ from rest_framework.parsers import JSONParser
 
 import io
 
-from file2.models import Document
-from file2.serializers import DocumentSerializer, TokenSerializer
+from file2.models import Document, CustomUser
+from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer
 
 import zipfile
 import re
@@ -36,7 +36,7 @@ class LoginView(generics.CreateAPIView):
     # This permission class will overide the global permission
     # class setting
     permission_classes = (permissions.AllowAny,)
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request, *args, **kwargs):
         # return Response("Bhagwan sab deek raha hai")
@@ -76,7 +76,7 @@ class RegisterUsersView(generics.CreateAPIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        new_user = User.objects.create_user(
+        new_user = CustomUser.objects.create_user(
             username=username, password=password, email=email
         )
         return Response(status=status.HTTP_201_CREATED)
@@ -85,10 +85,18 @@ class RegisterUsersView(generics.CreateAPIView):
 
 class ListDocumentView(generics.ListAPIView):
 
-    queryset = Document.objects.all()
+    # queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     # permission_classes = (permissions.AllowAny,)
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the documents
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Document.objects.filter(student=user)
 
 
 class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -152,14 +160,19 @@ class UploadDocumentView(generics.RetrieveUpdateAPIView):
     def post(self, request, *args, **kwargs):
 
         try:
-            serializer = DocumentSerializer(data=request.data)
+            serializer = DocumentSerializer(data=request.data, context={'request': request})
+
+            # print(request.data)
+
             if serializer.is_valid():
                 print("is_valid")
                 serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 print('not_valid')
+                print(serializer.errors)
+                return Response('not_valid')
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Document.DoesNotExist:
             return Response(
