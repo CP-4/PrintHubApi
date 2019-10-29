@@ -99,7 +99,7 @@ export default {
     return {
       files: [], // Array for holding the files.
       // api_host: 'http://192.168.43.199:8000',
-      api_host: 'http://192.168.1.102:8000',
+      api_host: 'http://192.168.1.104:8000',
       // api_host: 'http://192.168.0.103:8000',
       // api_host: 'localhost:8000',
       // api_host: 'http://127.0.0.1:8000',

@@ -16,10 +16,8 @@ urlpatterns = [
     path('shop/setprintjobstatus/', views.SetPrintJobStatus.as_view(), name="set-print-status"),
     path('shop/testprintjobdone/', views.TestUpdatePrintStatusDone.as_view(), name="test-update-printstatus"),
 	path('shop/printjobdone/<int:pk>', views.UpdatePrintStatusDone.as_view(), name="file-update-printstatus"),
-    
+
 
     path('auth/login/', views.LoginView.as_view(), name="auth-login"),
     path('auth/register/', views.RegisterUsersView.as_view(), name="auth-register"),
-
-
 ]

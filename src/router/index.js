@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import Logout from '@/components/Logout'
-// import Register from '@/components/Register'
+import Register from '@/components/Register'
 
 Vue.use(Router)
 
@@ -19,14 +19,14 @@ export default new Router({
         requiresAuth: true
       }
     },
-    // {
-    //   path: '/register',
-    //   name: 'Register',
-    //   component: Register,
-    //   meta: {
-    //     requiresLogged: true
-    //   }
-    // },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register,
+      meta: {
+        requiresLogged: true
+      }
+    },
     {
       path: '/login',
       name: 'Login',

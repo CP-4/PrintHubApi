@@ -15,6 +15,15 @@
                 </div>
               </div>
               <div class="field">
+                <label for="" class="label">Email</label>
+                <div class="control has-icons-left">
+                  <input type="email" placeholder="e.g. chinmay@example.com" class="input" required v-model="email">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-envelope"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="field">
                 <label for="" class="label">Password</label>
                 <div class="control has-icons-left">
                   <input type="password" placeholder="*******" class="input" required v-model="password">
@@ -24,8 +33,8 @@
                 </div>
               </div>
               <div class="field">
-                <button class="button is-success" v-on:click="loginUser">
-                  Login
+                <button class="button is-success" v-on:click="registerUser">
+                  Register
                 </button>
               </div>
             </form>
@@ -38,19 +47,21 @@
 
 <script>
   export default {
-    name: 'Login',
+    name: 'Register',
     data () {
       return {
         username: '',
         password: '',
+        email: '',
         wrongCred: false // activates appropriate message if set to true
       }
     },
     methods: {
-      loginUser () { // call loginUser action
-        this.$store.dispatch('loginUser', {
+      registerUser () { // call registerUser action
+        this.$store.dispatch('registerUser', {
           username: this.username,
-          password: this.password
+          password: this.password,
+          email: this.email
         })
           .then(() => {
             this.wrongCred = false

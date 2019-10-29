@@ -65,6 +65,9 @@ class RegisterUsersView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
+
+        print(request.data)
+
         username = request.data.get("username", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
@@ -79,7 +82,16 @@ class RegisterUsersView(generics.CreateAPIView):
         new_user = CustomUser.objects.create_user(
             username=username, password=password, email=email
         )
-        return Response(status=status.HTTP_201_CREATED)
+
+        login(request, new_user)
+        serializer = TokenSerializer(data={
+            # using drf jwt utility functions to generate a token
+            "token": jwt_encode_handler(
+                jwt_payload_handler(new_user)
+            )})
+        serializer.is_valid()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
