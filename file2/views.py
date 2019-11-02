@@ -17,8 +17,8 @@ from rest_framework.parsers import JSONParser
 
 import io
 
-from file2.models import Document
-from file2.serializers import DocumentSerializer, TokenSerializer
+from file2.models import Document, CustomUser
+from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer
 
 import zipfile
 import re
@@ -33,18 +33,14 @@ class LoginView(generics.CreateAPIView):
     """
     POST auth/login/
     """
-
-
     # This permission class will overide the global permission
     # class setting
     permission_classes = (permissions.AllowAny,)
-
-
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request, *args, **kwargs):
         # return Response("Bhagwan sab deek raha hai")
-        username = request.data.get("mobilenumber", "")
+        username = request.data.get("username", "")
         password = request.data.get("password", "")
         user = authenticate(request, username=username, password=password)
 
@@ -69,30 +65,50 @@ class RegisterUsersView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        mobilenumber = request.data.get("mobilenumber", "")
+
+        print(request.data)
+
+        username = request.data.get("username", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
 
-        if not mobilenumber and not password and not email:
+        if not username and not password and not email:
             return Response(
                 data={
-                    "message": "mobilenumber, password and email is required to register a user"
+                    "message": "username, password and email is required to register a user"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        new_user = User.objects.create_user(
-            username=mobilenumber, password=password, email=email
+        new_user = CustomUser.objects.create_user(
+            username=username, password=password, email=email
         )
-        return Response(status=status.HTTP_201_CREATED)
+
+        login(request, new_user)
+        serializer = TokenSerializer(data={
+            # using drf jwt utility functions to generate a token
+            "token": jwt_encode_handler(
+                jwt_payload_handler(new_user)
+            )})
+        serializer.is_valid()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
 class ListDocumentView(generics.ListAPIView):
 
-    queryset = Document.objects.all()
+    # queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    permission_classes = (permissions.AllowAny,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the documents
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Document.objects.filter(student=user)
 
 
 class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -101,7 +117,8 @@ class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
     PUT songs/:id/
     DELETE songs/:id/
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
@@ -147,22 +164,27 @@ class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UploadDocumentView(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
 
     parser_class = (FileUploadParser,)
 
     def post(self, request, *args, **kwargs):
 
         try:
-            serializer = DocumentSerializer(data=request.data)
+            serializer = DocumentSerializer(data=request.data, context={'request': request})
+
+            # print(request.data)
+
             if serializer.is_valid():
                 print("is_valid")
                 serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 print('not_valid')
+                print(serializer.errors)
+                return Response('not_valid')
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Document.DoesNotExist:
             return Response(
@@ -213,8 +235,8 @@ class UpdatePrintStatusDone(generics.RetrieveUpdateAPIView):
 
 
 class PrintFiles(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
@@ -241,8 +263,8 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
 
 
 class PickUpFiles(generics.RetrieveUpdateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 

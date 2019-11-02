@@ -1,24 +1,27 @@
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
+
+
 
 # Create your models here.
 
-from django.db import models
+def get_sentinel_user():
+    return get_user_model().objects.get_or_create(username='deleted')[0]
 
-# Create your models here.
+
+class CustomUser(AbstractUser):
+	pass
+
 
 class Document(models.Model):
 
 	docfile = models.FileField(upload_to='documents/%Y/%m/%d')
 	printJobStatus = models.IntegerField(default=0)
-	# pagecount = models.IntegerField(default=1)
+	pages = models.IntegerField(default=0)
 
-
-
-
-	# filename = models.CharField(max_length=10, default='myfile')
-	# # clientId = models.IntegerField()
-	# # numPages = models.IntegerField
-	# def save(self, *args, **kwargs):
-	# 	tmpfilename = self.docfile.split('/')[-1]
-	# 	self.filename = tmpfilename[0:10]
-	# 	super().save(*args, **kwargs)
+	student = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.SET(get_sentinel_user),
+	)
