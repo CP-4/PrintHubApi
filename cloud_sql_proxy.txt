@@ -1,0 +1,1 @@
+cloud_sql_proxy.exe -instances="preasy-53c43:asia-south1:printhub-db"=tcp:3306

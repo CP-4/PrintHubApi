@@ -175,7 +175,6 @@ class UploadDocumentView(generics.RetrieveUpdateAPIView):
             serializer = DocumentSerializer(data=request.data, context={'request': request})
 
             # print(request.data)
-
             if serializer.is_valid():
                 print("is_valid")
                 serializer.save()

@@ -13,12 +13,20 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import datetime
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'printhub-files'
+
+GS_PROJECT_ID = 'preasy-53c43'
+GS_MEDIA_BUCKET_NAME = 'printhub-files'
+# GS_STATIC_BUCKET_NAME = '<name-of-static-bucket>'
+# STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_STATIC_BUCKET_NAME)
+MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +39,7 @@ SECRET_KEY = 'bx))=@+=18h1$8c8#-j^5g7mu-1yhfbj-f8qqjfhhs-d$42gem'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'preasy-53c43.appspot.com',
     'http://127.0.0.1:8080',
     '192.168.43.199',
     '192.168.0.103',
@@ -94,12 +103,43 @@ WSGI_APPLICATION = 'myporject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# [START db_setup]
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/preasy-53c43:asia-south1:printhub-db',
+            'USER': 'admin',
+            'PASSWORD': '',
+            'NAME': 'printhub_db',
+        }
     }
-}
+else:
+    # Running locally so connect to either a local MySQL instance or connect
+    # to Cloud SQL via the proxy.  To start the proxy via command line:
+    #    $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
+    # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'NAME': 'printhub_db',
+            'USER': 'admin',
+            'PASSWORD': '',
+        }
+    }
+# [END db_setup]
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Password validation
@@ -190,3 +230,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'

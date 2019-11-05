@@ -1,5 +1,9 @@
 # [START django_app]
 runtime: python37
+
+env_variables:
+  GOOGLE_APPLICATION_CREDENTIALS: "Preasy-1ce7a4bf603e.json"
+
 handlers:
 # This configures Google App Engine to serve the files in the app's
 # static directory.
