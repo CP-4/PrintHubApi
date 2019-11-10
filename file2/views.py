@@ -113,9 +113,9 @@ class ListDocumentView(generics.ListAPIView):
 
 class DocumentDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    GET songs/:id/
-    PUT songs/:id/
-    DELETE songs/:id/
+    GET files/:id/
+    PUT files/:id/
+    DELETE files/:id/
     """
     permission_classes = (permissions.IsAuthenticated,)
     # permission_classes = (permissions.AllowAny,)
