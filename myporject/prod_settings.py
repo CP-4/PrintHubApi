@@ -36,7 +36,7 @@ MEDIA_URL = 'https://storage.googleapis.com/{}/'.format(GS_MEDIA_BUCKET_NAME)
 SECRET_KEY = 'bx))=@+=18h1$8c8#-j^5g7mu-1yhfbj-f8qqjfhhs-d$42gem'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'preasy-53c43.appspot.com',
@@ -113,7 +113,7 @@ if os.getenv('GAE_APPLICATION', None):
             'HOST': '/cloudsql/preasy-53c43:asia-south1:printhub-db',
             'USER': 'admin',
             'PASSWORD': '',
-            'NAME': 'dev_printhub_db',
+            'NAME': 'printhub_db',
         }
     }
 else:
@@ -126,7 +126,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'HOST': 'localhost',
             'PORT': '3306',
-            'NAME': 'dev_printhub_db',
+            'NAME': 'printhub_db',
             'USER': 'admin',
             'PASSWORD': '',
         }

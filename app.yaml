@@ -1,6 +1,8 @@
 # [START django_app]
 runtime: python37
 
+service: dev
+
 env_variables:
   GOOGLE_APPLICATION_CREDENTIALS: "Preasy-1ce7a4bf603e.json"
 

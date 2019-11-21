@@ -34,7 +34,7 @@ class Document(models.Model):
     printJobStatus = models.IntegerField(default=0)
     pages = models.IntegerField(default=0)
     doctype = models.CharField(max_length=5, default='err')
-    docname = models.CharField(max_length=20, default='docname')
+    docname = models.CharField(max_length=100, default='docname')
     student_name = models.CharField(max_length=100, default='student_name')
 
     print_copies = models.IntegerField(default=1)
@@ -51,11 +51,12 @@ class Document(models.Model):
 
     def get_document_name(self):
         filename, file_extension = os.path.splitext(self.docfile.name)
-        return filename
+        filename = filename.split('/')[-1]
+        return filename+file_extension
 
     def save(self, *args, **kwargs):
 
         self.doctype = self.get_document_type()
-        self.filename = self.get_document_name()
+        self.docname = self.get_document_name()
         self.student_name = self.student.student_name;
         super().save(*args, **kwargs)  # Call the "real" save() method.

@@ -6,6 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 /media
 Preasy-1ce7a4bf603e.json
+/file2/migrations/_pycache_/
+/file2/__pycache__/
+ /myporject/__pycache__/
 
 # Editor directories and files
 .idea
