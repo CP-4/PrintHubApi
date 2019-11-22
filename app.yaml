@@ -5,7 +5,8 @@ service: dev
 
 env_variables:
   GOOGLE_APPLICATION_CREDENTIALS: "Preasy-1ce7a4bf603e.json"
-
+  # DJANGO_SETTINGS_MODULE: myporject.prod_settings
+  DJANGO_SETTINGS_MODULE: myporject.dev_settings
 handlers:
 # This configures Google App Engine to serve the files in the app's
 # static directory.

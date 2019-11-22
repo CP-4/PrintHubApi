@@ -4,6 +4,11 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 import os
 
+import xml.dom.minidom
+import zipfile
+import re
+import io
+from PyPDF2 import PdfFileReader
 
 # Create your models here.
 
@@ -54,9 +59,30 @@ class Document(models.Model):
         filename = filename.split('/')[-1]
         return filename+file_extension
 
+    def get_document_pages(self):
+        filename, file_extension = os.path.splitext(self.docfile.name)
+
+        if file_extension == '.doc' or file_extension == '.docx':
+            with zipfile.ZipFile(self.docfile) as document:
+                uglyXml = xml.dom.minidom.parseString(document.read('docProps/app.xml')).toprettyxml(indent='  ')
+                result = re.search('<Pages>(.*)</Pages>', uglyXml)
+                pages = result.group(1)
+
+            return pages
+
+        elif file_extension == '.pdf':
+            filebytes = self.docfile.read()
+            # self.docfile.close()
+            file = io.BytesIO(filebytes)
+            pdf = PdfFileReader(file)
+            pages = pdf.getNumPages()
+            return pages
+
+
     def save(self, *args, **kwargs):
 
         self.doctype = self.get_document_type()
         self.docname = self.get_document_name()
-        self.student_name = self.student.student_name;
+        self.pages = self.get_document_pages()
+        self.student_name = self.student.student_name
         super().save(*args, **kwargs)  # Call the "real" save() method.
