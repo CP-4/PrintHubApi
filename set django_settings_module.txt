@@ -1,1 +1,1 @@
-set DJANGO_SETTINGS_MODULE=myproject.dev_settings
+set DJANGO_SETTINGS_MODULE=myporject.dev_settings

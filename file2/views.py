@@ -40,9 +40,12 @@ class LoginView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # return Response("Bhagwan sab deek raha hai")
-        username = request.data.get("username", "")
+        print(request.data)
+
+        email = request.data.get("email", "")
         password = request.data.get("password", "")
-        user = authenticate(request, username=username, password=password)
+
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             # login saves the user’s ID in the session,
@@ -68,19 +71,25 @@ class RegisterUsersView(generics.CreateAPIView):
 
         print(request.data)
 
-        username = request.data.get("username", "")
+        student_name = request.data.get("student_name", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
 
-        if not username and not password and not email:
+        regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+        if(re.search(regex,email)):
+            pass
+        else:
+            email = ''
+
+        if not student_name or not password or not email:
             return Response(
                 data={
-                    "message": "username, password and email is required to register a user"
+                    "message": "Name, password and email is required to register a user"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
         new_user = CustomUser.objects.create_user(
-            username=username, password=password, email=email
+            student_name=student_name, password=password, email=email
         )
 
         login(request, new_user)
