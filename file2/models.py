@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 import os
+from datetime import datetime
 
 import xml.dom.minidom
 import zipfile
@@ -10,6 +11,8 @@ import re
 import io
 from PyPDF2 import PdfFileReader
 
+import string
+import random
 # Create your models here.
 
 def get_sentinel_user():
@@ -35,7 +38,15 @@ class Document(models.Model):
         (BOOKDOUBLESIDE, "Book Double Side"),
     )
 
-    docfile = models.FileField(upload_to='documents/%Y/%m/%d')
+    def get_document_path(instance, filename):
+
+        now = datetime.now()
+        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 5))
+        filename = res + '-' + filename
+        path = 'documents' + now.strftime('/%Y/%m/%d')
+        return os.path.join(path, filename)
+
+    docfile = models.FileField(upload_to=get_document_path)
     printJobStatus = models.IntegerField(default=0)
     pages = models.IntegerField(default=0)
     doctype = models.CharField(max_length=5, default='err')
@@ -57,7 +68,8 @@ class Document(models.Model):
     def get_document_name(self):
         filename, file_extension = os.path.splitext(self.docfile.name)
         filename = filename.split('/')[-1]
-        return filename+file_extension
+        print(filename)
+        return filename[6:] + file_extension
 
     def get_document_pages(self):
         filename, file_extension = os.path.splitext(self.docfile.name)
