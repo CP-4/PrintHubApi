@@ -46,7 +46,7 @@ class LoginView(generics.CreateAPIView):
         password = request.data.get("password", "")
 
         user = authenticate(request, email=email, password=password)
-
+        print(user)
         if user is not None:
             # login saves the user’s ID in the session,
             # using Django’s session framework.
@@ -77,8 +77,10 @@ class RegisterUsersView(generics.CreateAPIView):
 
         regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
         if(re.search(regex,email)):
+            print("email accepted")
             pass
         else:
+            print("email rejected")
             email = ''
 
         if not student_name or not password or not email:
@@ -91,7 +93,7 @@ class RegisterUsersView(generics.CreateAPIView):
         new_user = CustomUser.objects.create_user(
             student_name=student_name, password=password, email=email
         )
-
+        print(new_user)
         login(request, new_user)
         serializer = TokenSerializer(data={
             # using drf jwt utility functions to generate a token

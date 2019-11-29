@@ -86,7 +86,7 @@ class Document(models.Model):
 
         now = datetime.now()
         res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 5))
-        filename = res + '-' + filename
+        filename = res + '-bethechange-' + filename
         path = 'documents' + now.strftime('/%Y/%m/%d')
         return os.path.join(path, filename)
 
@@ -112,8 +112,12 @@ class Document(models.Model):
     def get_document_name(self):
         filename, file_extension = os.path.splitext(self.docfile.name)
         filename = filename.split('/')[-1]
+        docname = filename.split('-bethechange-')
+        if len(docname) == 2:
+            filename = docname[1]
+
         print(filename)
-        return filename[6:] + file_extension
+        return filename + file_extension
 
     def get_document_pages(self):
         filename, file_extension = os.path.splitext(self.docfile.name)
