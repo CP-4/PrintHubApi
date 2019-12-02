@@ -20,4 +20,6 @@ urlpatterns = [
 
     path('auth/login/', views.LoginView.as_view(), name="auth-login"),
     path('auth/register/', views.RegisterUsersView.as_view(), name="auth-register"),
+
+    path('urlanalytics/trigger', views.UrlAnalyticsView.as_view(), name="uranal-trigger")
 ]

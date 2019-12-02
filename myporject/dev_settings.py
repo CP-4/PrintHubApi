@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
 	'dev-api-dot-preasy-53c43.appspot.com',
     # 'api-preasy-53c43.appspot.com',
 	'dev-dot-preasy-53c43.appspot.com',
+	'192.168.0.103',
     '127.0.0.1',
     'localhost',
 ]

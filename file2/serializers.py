@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Document, CustomUser
+from .models import Document, CustomUser, UrlAnalytics
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -29,4 +29,9 @@ class TokenSerializer(serializers.Serializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
+        fields = '__all__'
+
+class UrlAnalyticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UrlAnalytics
         fields = '__all__'

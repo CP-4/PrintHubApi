@@ -146,3 +146,9 @@ class Document(models.Model):
         self.pages = self.get_document_pages()
         self.student_name = self.student.student_name
         super().save(*args, **kwargs)  # Call the "real" save() method.
+
+
+class UrlAnalytics(models.Model):
+    dtime = models.DateTimeField(auto_now_add=True)
+    ipaddress = models.CharField(max_length=100, default='err')
+    data = models.CharField(max_length=200, default='err')
