@@ -253,14 +253,26 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         try:
-
+            # print(request.data)
             printTrayIds = list(request.data)
-            print(printTrayIds)
+            printTray = list(request.data)
+            # print(printTrayIds)
 
-            for id in printTrayIds:
-                a_doc = self.queryset.get(pk=id)
+            # a_doc = self.queryset.get(pk=kwargs["pk"])
+            # serializer = DocumentSerializer()
+            # updated_document = serializer.update(a_doc, request.data)
+
+            for document in printTray:
+                a_doc = self.queryset.get(pk=document['id'])
                 a_doc.printJobStatus = 1
+                a_doc.print_feature = document['print_feature']
+                a_doc.print_copies = document['print_copies']
                 a_doc.save()
+
+            # for id in printTrayIds:
+            #     a_doc = self.queryset.get(pk=id)
+            #     a_doc.printJobStatus = 1
+            #     a_doc.save()
 
             return Response("Gotcha brother ;)")
         except Document.DoesNotExist:
