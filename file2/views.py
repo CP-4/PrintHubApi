@@ -17,8 +17,8 @@ from rest_framework.parsers import JSONParser
 
 import io
 
-from file2.models import Document, CustomUser, UrlAnalytics
-from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer, UrlAnalyticsSerializer
+from file2.models import Document, CustomUser, UrlAnalytics, GuestStudent
+from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer, UrlAnalyticsSerializer, GuestStudentSerializer
 
 import zipfile
 import re
@@ -432,7 +432,7 @@ class UrlAnalyticsView(generics.CreateAPIView):
         print(ip)
 
         anal = list(self.queryset.all())
-        print(anal)
+        # print(anal)
         return Response(UrlAnalyticsSerializer(anal, many=True).data)
 
         # return Response(
@@ -441,18 +441,64 @@ class UrlAnalyticsView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            print('1')
+            # print('1')
             a_url = UrlAnalytics.objects.create()
-            print('2')
+            # print('2')
             ip = self.get_client_ip(request)
-            print(ip)
-            a_url.ipaddress = ip
+            # print(ip)
+            print(request.data)
+            print('============================')
+            print(request.data['temp_user_id'])
+            # a_url.ipaddress = ip
             a_url.data = request.data['data']
+            a_url.temp_user_id = request.data['temp_user_id']
+            a_url.temp_user_branch = request.data['temp_user_branch']
             a_url.save()
-            print('3')
+            # print('3')
             anal = list(self.queryset.all())
-            print(anal)
+            # print(anal)
             return Response(UrlAnalyticsSerializer(anal, many=True).data)
+
+            # return Response(
+            #     data={
+            #     self.queryset.all()
+            #     },
+            #     status=status.HTTP_404_NOT_FOUND
+            # )
+        except Document.DoesNotExist:
+            return Response(
+                data={
+                "message": "Some error occured"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class GuestStudentView(generics.CreateAPIView):
+    permission_classes = (permissions.AllowAny,)
+    queryset = GuestStudent.objects.all()
+    serializer_class = GuestStudentSerializer
+
+    def get(self, request, *args, **kwargs):
+        guest = list(self.queryset.all())
+        # print(anal)
+        return Response(GuestStudentSerializer(guest, many=True).data)
+
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # print('1')
+            a_user = GuestStudent.objects.create()
+            # print('2')
+            print(request.data)
+            a_user.student_name = request.data['user_name']
+            a_user.student_phone = request.data['user_phone']
+            a_user.student_branch = request.data['user_branch']
+            a_user.save()
+            # print('3')
+            # anal = list(self.queryset.all())
+            # print(anal)
+            return Response("Student registered")
 
             # return Response(
             #     data={

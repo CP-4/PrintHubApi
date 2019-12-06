@@ -147,8 +147,15 @@ class Document(models.Model):
         self.student_name = self.student.student_name
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
+class GuestStudent(models.Model):
+    """docstring for GuestPrint."""
+    student_name = models.CharField(max_length=200, default='err')
+    student_phone = models.CharField(max_length=200, default='err')
+    student_branch = models.CharField(max_length=200, default='err')
 
 class UrlAnalytics(models.Model):
     dtime = models.DateTimeField(auto_now_add=True)
     ipaddress = models.CharField(max_length=100, default='err')
     data = models.CharField(max_length=200, default='err')
+    temp_user_id = models.CharField(max_length=200, default='err')
+    temp_user_branch = models.CharField(max_length=50, default='err')

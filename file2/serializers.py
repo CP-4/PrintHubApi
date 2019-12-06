@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Document, CustomUser, UrlAnalytics
+from .models import Document, CustomUser, UrlAnalytics, GuestStudent
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -26,10 +26,18 @@ class TokenSerializer(serializers.Serializer):
     """
     token = serializers.CharField(max_length=255)
 
+
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = '__all__'
+
+
+class GuestStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuestStudent
+        fields = '__all__'
+
 
 class UrlAnalyticsSerializer(serializers.ModelSerializer):
     class Meta:
