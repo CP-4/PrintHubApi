@@ -24,6 +24,8 @@ import zipfile
 import re
 import xml.dom.minidom
 
+from datetime import date
+
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -253,10 +255,10 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         try:
-            # print(request.data)
-            printTrayIds = list(request.data)
-            printTray = list(request.data)
-            # print(printTrayIds)
+            print(request.data)
+
+            printTray = list(request.data['print_tray'])
+            promo_code = request.data['promo_code']
 
             # a_doc = self.queryset.get(pk=kwargs["pk"])
             # serializer = DocumentSerializer()
@@ -267,7 +269,9 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
                 a_doc.printJobStatus = 1
                 a_doc.print_feature = document['print_feature']
                 a_doc.print_copies = document['print_copies']
+                a_doc.promo_code = promo_code
                 a_doc.save()
+
 
             # for id in printTrayIds:
             #     a_doc = self.queryset.get(pk=id)
@@ -431,8 +435,11 @@ class UrlAnalyticsView(generics.CreateAPIView):
         ip = self.get_client_ip(request)
         print(ip)
 
-        anal = list(self.queryset.all())
+        # anal = list(self.queryset.all())
         # print(anal)
+        today = date.today()
+        anal = list(UrlAnalytics.objects.filter(dtime__year=today.year, dtime__month=today.month, dtime__day=today.day))
+
         return Response(UrlAnalyticsSerializer(anal, many=True).data)
 
         # return Response(
@@ -441,22 +448,21 @@ class UrlAnalyticsView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            # print('1')
             a_url = UrlAnalytics.objects.create()
-            # print('2')
             ip = self.get_client_ip(request)
-            # print(ip)
-            print(request.data)
             print('============================')
-            print(request.data['temp_user_id'])
-            # a_url.ipaddress = ip
+            print(request.data)
+            user = request.user
+            print(user.email)
+
             a_url.data = request.data['data']
             a_url.temp_user_id = request.data['temp_user_id']
-            a_url.temp_user_branch = request.data['temp_user_branch']
+            a_url.student_email = user.email
             a_url.save()
-            # print('3')
-            anal = list(self.queryset.all())
-            # print(anal)
+
+            today = date.today()
+            anal = list(UrlAnalytics.objects.filter(dtime__year=today.year, dtime__month=today.month, dtime__day=today.day))
+
             return Response(UrlAnalyticsSerializer(anal, many=True).data)
 
             # return Response(
@@ -510,6 +516,32 @@ class GuestStudentView(generics.CreateAPIView):
             return Response(
                 data={
                 "message": "Some error occured"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class UpdateStudentView(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            print(request.data)
+            print(request.user)
+
+            a_user = self.request.user
+
+            a_user.college = request.data['clg_value']
+            a_user.branch = request.data['branch_value']
+            a_user.year = request.data['year_value']
+            a_user.phone = request.data['phone_value']
+            a_user.save()
+
+            return Response("Profile updated")
+        except Document.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Error occured"
                 },
                 status=status.HTTP_404_NOT_FOUND
             )

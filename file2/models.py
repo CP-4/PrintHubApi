@@ -61,6 +61,10 @@ class CustomUser(AbstractUser):
     student_name = models.CharField(max_length=100, default='student_name')
     username = None
     email = models.EmailField(_('email address'), unique=True)
+    college = models.CharField(max_length=100, default='clg')
+    branch = models.CharField(max_length=100, default='branch')
+    year = models.CharField(max_length=100, default='year')
+    phone = models.CharField(max_length=15, default='phone')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['student_name']
@@ -99,6 +103,8 @@ class Document(models.Model):
 
     print_copies = models.IntegerField(default=1)
     print_feature = models.CharField(max_length=20, choices=PRINT_FEATURE_CHOICES, default=SINGLESIDE)
+
+    promo_code = models.CharField(max_length=30, default='no_promo')
 
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -158,4 +164,5 @@ class UrlAnalytics(models.Model):
     ipaddress = models.CharField(max_length=100, default='err')
     data = models.CharField(max_length=200, default='err')
     temp_user_id = models.CharField(max_length=200, default='err')
-    temp_user_branch = models.CharField(max_length=50, default='err')
+    # temp_user_branch = models.CharField(max_length=50, default='err')
+    student_email = models.CharField(max_length=200, default='err')

@@ -26,4 +26,7 @@ urlpatterns = [
 
 
     path('studymaterial/print', views.GuestStudentView.as_view(), name="gueststudent"),
+
+
+    path('profile/update', views.UpdateStudentView.as_view(), name="update-student"),
 ]
