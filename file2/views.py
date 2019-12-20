@@ -269,7 +269,10 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
                 a_doc.printJobStatus = 1
                 a_doc.print_feature = document['print_feature']
                 a_doc.print_copies = document['print_copies']
-                a_doc.promo_code = promo_code
+
+                if promo_code:
+                    a_doc.promo_code = promo_code
+
                 a_doc.save()
 
 
@@ -452,12 +455,18 @@ class UrlAnalyticsView(generics.CreateAPIView):
             ip = self.get_client_ip(request)
             print('============================')
             print(request.data)
-            user = request.user
-            print(user.email)
+            # print(user.email)
 
             a_url.data = request.data['data']
             a_url.temp_user_id = request.data['temp_user_id']
-            a_url.student_email = user.email
+
+            try:
+                user = request.user
+                a_url.student_email = user.email
+                pass
+            except AttributeError:
+                pass
+
             a_url.save()
 
             today = date.today()

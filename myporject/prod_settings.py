@@ -39,6 +39,7 @@ SECRET_KEY = 'bx))=@+=18h1$8c8#-j^5g7mu-1yhfbj-f8qqjfhhs-d$42gem'
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
     'api-dot-preasy-53c43.appspot.com',
     'preasy-53c43.appspot.com',
 ]
