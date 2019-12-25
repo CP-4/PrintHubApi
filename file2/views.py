@@ -76,25 +76,38 @@ class RegisterUsersView(generics.CreateAPIView):
         student_name = request.data.get("student_name", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
+        phone = request.data.get("phone", "")
 
-        regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-        if(re.search(regex,email)):
+        regexEmail = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+        if(re.search(regexEmail, email)):
             print("email accepted")
             pass
         else:
             print("email rejected")
             email = ''
 
-        if not student_name or not password or not email:
+        regexPhone= '^[0-9]{10}$'
+        if(re.search(regexPhone, phone)):
+            print("phone accepted")
+            pass
+        else:
+            print("phone rejected")
+            phone = ''
+
+        if not student_name or not password or not email or not phone:
             return Response(
                 data={
-                    "message": "Name, password and email is required to register a user"
+                    "message": "Name, password, phone number and email is required to register a user"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
         new_user = CustomUser.objects.create_user(
             student_name=student_name, password=password, email=email
         )
+
+        new_user.phone = phone
+        new_user.save()
+
         print(new_user)
         login(request, new_user)
         serializer = TokenSerializer(data={
@@ -543,7 +556,7 @@ class UpdateStudentView(generics.RetrieveUpdateAPIView):
             a_user.college = request.data['clg_value']
             a_user.branch = request.data['branch_value']
             a_user.year = request.data['year_value']
-            a_user.phone = request.data['phone_value']
+            # a_user.phone = request.data['phone_value']
             a_user.save()
 
             return Response("Profile updated")
