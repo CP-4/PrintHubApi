@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Document, CustomUser, UrlAnalytics, GuestStudent
+from .models import Document, CustomUser, UrlAnalytics, GuestStudent, Shop
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -42,4 +42,12 @@ class GuestStudentSerializer(serializers.ModelSerializer):
 class UrlAnalyticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UrlAnalytics
+        fields = '__all__'
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    
+    class Meta:
+        model = Shop
         fields = '__all__'

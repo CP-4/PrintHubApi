@@ -17,8 +17,8 @@ from rest_framework.parsers import JSONParser
 
 import io
 
-from file2.models import Document, CustomUser, UrlAnalytics, GuestStudent
-from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer, UrlAnalyticsSerializer, GuestStudentSerializer
+from file2.models import Document, CustomUser, UrlAnalytics, GuestStudent, Shop
+from file2.serializers import DocumentSerializer, TokenSerializer, CustomUserSerializer, UrlAnalyticsSerializer, GuestStudentSerializer, ShopSerializer
 
 import zipfile
 import re
@@ -198,6 +198,7 @@ class UploadDocumentView(generics.RetrieveUpdateAPIView):
     def post(self, request, *args, **kwargs):
 
         try:
+            print(request.data)
             serializer = DocumentSerializer(data=request.data, context={'request': request})
 
             # print(request.data)
@@ -342,7 +343,9 @@ class GetPrintJobs(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            deliveryjobs = list(filter(lambda x: x.printJobStatus == 1, self.queryset.all()))
+            user = self.request.user
+            # deliveryjobs = list(filter(lambda x: x.printJobStatus == 1, self.queryset.all()))
+            deliveryjobs = list(filter(lambda x: x.printJobStatus == 1, self.queryset.filter(shop=user)))
             print(deliveryjobs)
             return Response(DocumentSerializer(deliveryjobs, many=True).data)
         except Document.DoesNotExist:
@@ -542,6 +545,7 @@ class GuestStudentView(generics.CreateAPIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+
 class UpdateStudentView(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     # permission_classes = (permissions.AllowAny,)
@@ -561,6 +565,63 @@ class UpdateStudentView(generics.RetrieveUpdateAPIView):
 
             return Response("Profile updated")
         except Document.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Error occured"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class ListShopView(generics.ListAPIView):
+
+    # queryset = Shop.objects.all()
+    serializer_class = ShopSerializer
+    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the shops.
+        """
+        # user = self.request.user
+        return Shop.objects.all()
+
+
+class CreateShopView(generics.RetrieveUpdateAPIView):
+
+    # queryset = Shop.objects.all()
+    # serializer_class = ShopSerializer
+    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+
+    def post(self, request, *args, **kwargs):
+        try:
+
+            a_user = self.request.user
+            data = request.data
+
+            if 'id' in data:
+                shop = Shop.objects.get(pk=data['id'])
+
+                if shop:
+                    serializer = ShopSerializer(shop, data=data, context={'request': request})
+
+            else:
+                serializer = ShopSerializer(data=data, context={'request': request})
+
+            # print(request.data)
+            if serializer.is_valid():
+                print("is_valid")
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print('not_valid')
+                print(serializer.errors)
+                return Response('not_valid')
+
+        except Shop.DoesNotExist:
             return Response(
                 data={
                     "message": "Error occured"

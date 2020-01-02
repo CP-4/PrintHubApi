@@ -71,6 +71,15 @@ class CustomUser(AbstractUser):
 
     objects = UserManager()
 
+class Shop(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, default='err')
+    gmap_url = models.URLField(max_length=1000, default='err')
+    city = models.CharField(max_length=200, default='err')
+    state = models.CharField(max_length=200, default='err')
+    address = models.CharField(max_length=1000, default='err')
+    price_ss = models.FloatField(default=0)
+    price_ds = models.FloatField(default=0)
 
 class Document(models.Model):
 
@@ -106,10 +115,8 @@ class Document(models.Model):
 
     promo_code = models.CharField(max_length=30, default='no_promo')
 
-    student = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-    )
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user))
+    shop = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name='document_shops')
 
     def get_document_type(self):
         filename, file_extension = os.path.splitext(self.docfile.name)

@@ -11,6 +11,8 @@ urlpatterns = [
     path('files/pickup', views.PickUpFiles.as_view(), name="print-my-tray"),
 
 
+    path('shops/', views.ListShopView.as_view(), name="shops-all"),
+    path('shop/register', views.CreateShopView.as_view(), name="shop-register"),
     path('shop/getprintjobs', views.GetPrintJobs.as_view(), name="get-print-jobs"),
     path('shop/getdeliveryjobs', views.GetDeliveryJobs.as_view(), name="get-delivery-jobs"),
     path('shop/setprintjobstatus/', views.SetPrintJobStatus.as_view(), name="set-print-status"),
