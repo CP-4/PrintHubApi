@@ -283,7 +283,9 @@ class PrintFiles(generics.RetrieveUpdateAPIView):
                 a_doc.printJobStatus = 1
                 a_doc.print_feature = document['print_feature']
                 a_doc.print_copies = document['print_copies']
-
+                a_doc.print_cost = document['print_cost']
+                shop = CustomUser.objects.get(pk=document['shop'])
+                a_doc.shop = shop
                 if promo_code:
                     a_doc.promo_code = promo_code
 
@@ -368,7 +370,8 @@ class GetDeliveryJobs(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            deliveryjobs = list(filter(lambda x: x.printJobStatus == 3, self.queryset.all()))
+            user = self.request.user
+            deliveryjobs = list(filter(lambda x: x.printJobStatus == 3, self.queryset.filter(shop=user)))
             print(deliveryjobs)
             return Response(DocumentSerializer(deliveryjobs, many=True).data)
         except Document.DoesNotExist:
@@ -580,33 +583,34 @@ class ListShopView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     # permission_classes = (permissions.IsAuthenticated,)
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
         """
         This view should return a list of all the shops.
         """
         # user = self.request.user
-        return Shop.objects.all()
+        # return Shop.objects.all()
+
+        shops = Shop.objects.all()
+        print(shops[0].user_id)
+        return Response(ShopSerializer(shops, many=True).data)
 
 
 class CreateShopView(generics.RetrieveUpdateAPIView):
-
-    # queryset = Shop.objects.all()
-    # serializer_class = ShopSerializer
-    permission_classes = (permissions.AllowAny,)
-    # permission_classes = (permissions.IsAuthenticated,)
-
+    # permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         try:
 
             a_user = self.request.user
             data = request.data
+            shop = a_user.shop_set.first()
 
-            if 'id' in data:
-                shop = Shop.objects.get(pk=data['id'])
+            # if 'id' in data:
+            #     shop = Shop.objects.get(pk=data['id'])
 
-                if shop:
-                    serializer = ShopSerializer(shop, data=data, context={'request': request})
+            if shop:
+                serializer = ShopSerializer(shop, data=data, context={'request': request})
 
             else:
                 serializer = ShopSerializer(data=data, context={'request': request})
@@ -625,6 +629,58 @@ class CreateShopView(generics.RetrieveUpdateAPIView):
             return Response(
                 data={
                     "message": "Error occured"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class ShopDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET files/:id/
+    PUT files/:id/
+    DELETE files/:id/
+    """
+    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
+    # queryset = Document.objects.all()
+    # serializer_class = DocumentSerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            shop = Shop.objects.get(pk=kwargs["pk"])
+            # print(DocumentSerializer(a_doc).data)
+            return Response(ShopSerializer(shop).data)
+        except Document.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Shop with id: {} does not exist".format(kwargs["pk"])
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class ShopDetailFromUserView(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user = self.request.user
+            shop = user.shop_set.first()
+            print(shop.id, shop.name)
+
+            if shop:
+                return Response(ShopSerializer(shop).data)
+            else:
+                return Response(
+                    data={
+                        "message": "No shop associated with this account, please fill Shop Detials"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except Document.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Shop with id: {} does not exist".format(kwargs["pk"])
                 },
                 status=status.HTTP_404_NOT_FOUND
             )

@@ -46,8 +46,8 @@ class UrlAnalyticsSerializer(serializers.ModelSerializer):
 
 
 class ShopSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    
+    user = serializers.CharField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Shop
         fields = '__all__'

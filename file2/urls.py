@@ -12,6 +12,8 @@ urlpatterns = [
 
 
     path('shops/', views.ListShopView.as_view(), name="shops-all"),
+    path('shops/<int:pk>/', views.ShopDetailView.as_view(), name="shops-detail"),
+    path('shops/getshopfromuser/', views.ShopDetailFromUserView.as_view(), name="shops-detail-form-user"),
     path('shop/register', views.CreateShopView.as_view(), name="shop-register"),
     path('shop/getprintjobs', views.GetPrintJobs.as_view(), name="get-print-jobs"),
     path('shop/getdeliveryjobs', views.GetDeliveryJobs.as_view(), name="get-delivery-jobs"),

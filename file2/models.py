@@ -80,6 +80,13 @@ class Shop(models.Model):
     address = models.CharField(max_length=1000, default='err')
     price_ss = models.FloatField(default=0)
     price_ds = models.FloatField(default=0)
+    user_id_2 = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+
+        self.user_id_2 = self.user_id
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
 class Document(models.Model):
 
@@ -107,11 +114,12 @@ class Document(models.Model):
     printJobStatus = models.IntegerField(default=0)
     pages = models.IntegerField(default=0)
     doctype = models.CharField(max_length=5, default='err')
-    docname = models.CharField(max_length=100, default='docname')
+    docname = models.CharField(max_length=500, default='docname')
     student_name = models.CharField(max_length=100, default='student_name')
 
     print_copies = models.IntegerField(default=1)
     print_feature = models.CharField(max_length=20, choices=PRINT_FEATURE_CHOICES, default=SINGLESIDE)
+    print_cost = models.FloatField(default=0)
 
     promo_code = models.CharField(max_length=30, default='no_promo')
 
@@ -151,6 +159,8 @@ class Document(models.Model):
             pages = pdf.getNumPages()
             return pages
 
+    def get_print_cost(self):
+        pass
 
     def save(self, *args, **kwargs):
 
@@ -158,6 +168,7 @@ class Document(models.Model):
         self.docname = self.get_document_name()
         self.pages = self.get_document_pages()
         self.student_name = self.student.student_name
+        # self.print_cost = self.get_print_cost()
         super().save(*args, **kwargs)  # Call the "real" save() method.
 
 class GuestStudent(models.Model):
